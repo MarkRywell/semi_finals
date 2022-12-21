@@ -18,8 +18,9 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
   List todos = [];
   late AnimationController animationController;
   late var colorTween;
+  String link = 'https://jsonplaceholder.typicode.com/todos';
 
-  Future <dynamic> fetchData (String link) async {
+  Future <dynamic> fetchData () async {
 
     var url = Uri.parse(link);
 
@@ -45,6 +46,36 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
     else {
       Exception("Error with a status code: ${response.statusCode}");
     }
+  }
+
+  addData (var newTodo) async {
+
+    var url = Uri.parse('$link?id=${newTodo.id}&userId${newTodo.userId}'
+        '&title${newTodo.title}&completed=${newTodo.completed}');
+
+    var response = await http.post(url);
+
+    if(response.statusCode == 201) {
+      showSnackBar();
+      setState(() {
+        todos.add(newTodo);
+
+      });
+    }
+  }
+
+  showSnackBar() {
+    ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text("Task Added"),
+          backgroundColor: Colors.lightBlueAccent,
+          padding: const EdgeInsets.all(15),
+          behavior: SnackBarBehavior.fixed,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8),
+          ),
+        )
+    );
   }
 
   status (bool completed) {
@@ -75,7 +106,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
         title: const Text("To Do")
       ),
       body: FutureBuilder(
-        future: fetchData('https://jsonplaceholder.typicode.com/todos'),
+        future: fetchData(),
         builder: (context, snapshot) {
           if(snapshot.connectionState == ConnectionState.done) {
             if(snapshot.hasError) {
@@ -112,11 +143,18 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
           );
         },
       ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
-          Todo newTodo = await Navigator.push(
+          var newTodo = await Navigator.push(
               context,
           MaterialPageRoute(builder: (context) => TodoForm(listLength: todos.length)));
+
+          if(newTodo == null) {
+            return;
+          }
+
+          addData(newTodo);
         },
         child: const Icon(Icons.add_task)
       ),
