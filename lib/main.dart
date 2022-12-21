@@ -3,9 +3,12 @@ import 'package:semi_finals/views/home_page.dart';
 
 void main() {
   runApp(
-      const MaterialApp(
+      MaterialApp(
         debugShowCheckedModeBanner: false,
-        home: HomePage()
+        theme: ThemeData(
+            primarySwatch: Colors.blueGrey
+        ),
+        home: const HomePage(),
       ));
 }
 

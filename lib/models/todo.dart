@@ -12,12 +12,4 @@ class Todo {
     required this.completed
   });
 
-  factory Todo.fromMap(Map<String, dynamic> map) {
-    return Todo(
-      id: map['id'],
-      userId: map['userId'],
-      title: map['title'],
-      completed: map['completed']
-    );
-  }
 }
